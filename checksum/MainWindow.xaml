@@ -49,8 +49,8 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
+                        <!--<RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>-->
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0"  Grid.Column="0" >File</Label>
@@ -60,7 +60,7 @@
                     <Label Grid.Row="4"  Grid.Column="0" >SHA-256</Label>
                     <Label Grid.Row="5"  Grid.Column="0" >SHA-384</Label>
                     <Label Grid.Row="6"  Grid.Column="0" >SHA-512</Label>
-                    <Label Grid.Row="9"  Grid.Column="0" >HASH</Label>
+                    <Label Grid.Row="8"  Grid.Column="0" >HASH</Label>
                     
                     <CheckBox Name="_chkCRC32"  Grid.Row="1"  Grid.Column="1" Checked="_chkCRC32_Checked" ></CheckBox>
                     <CheckBox Name="_chkMD5"    Grid.Row="2"  Grid.Column="1" Checked="_chkMD5_Checked"></CheckBox>
@@ -76,7 +76,7 @@
                     <TextBox Name="_txtSHA256"  Grid.Row="4"  Grid.Column="2" ></TextBox>
                     <TextBox Name="_txtSHA384"  Grid.Row="5"  Grid.Column="2" ></TextBox>
                     <TextBox Name="_txtSHA512"  Grid.Row="6"  Grid.Column="2" ></TextBox>
-                    <TextBox Name="_txtHASH"    Grid.Row="9"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtHASH"    Grid.Row="8"  Grid.Column="2" ></TextBox>
 
                     <Button Name="_btnFile"     Grid.Row="0"  Grid.Column="3" Click="_btnFile_Click">Browse</Button>
                     <Button Name="_btnCRC32"    Grid.Row="1"  Grid.Column="3" Click="_btnCRC32_Click">Copy CRC32</Button>
@@ -85,25 +85,30 @@
                     <Button Name="_btnSHA256"   Grid.Row="4"  Grid.Column="3" Click="_btnSHA256_Click">Copy SHA-256</Button>
                     <Button Name="_btnSHA384"   Grid.Row="5"  Grid.Column="3" Click="_btnSHA384_Click">Copy SHA-384</Button>
                     <Button Name="_btnSHA512"   Grid.Row="6"  Grid.Column="3" Click="_btnSHA512_Click">Copy SHA-512</Button>
-                    <Button Name="_btnCopyAll"  Grid.Row="7"  Grid.Column="3" Click="_btnCopyAll_Click">Copy All</Button>
+                    <!--<Button Name="_btnCopyAll"  Grid.Row="7"  Grid.Column="3" Click="_btnCopyAll_Click">Copy All</Button>-->
                     <!--<Button Name="_btnPaste"    Grid.Row="9"  Grid.Column="3" Click="_btnPaste_Click">Paste</Button>-->
-                    <Button Name="_btnVerfiy"   Grid.Row="10" Grid.Column="2" Click="_btnVerfiy_Click"  HorizontalAlignment="Right" >Verify</Button>
+                    <Button Name="_btnVerfiy"   Grid.Row="8" Grid.Column="3" Click="_btnVerfiy_Click"  HorizontalAlignment="Right" >Verify</Button>
 
+                    <StatusBar Name="_sbProgress" Grid.Row="10" Grid.ColumnSpan="4" Visibility="Collapsed">
+                        <StatusBarItem>
+                            <TextBlock Name="_lblStatusText" />
+                        </StatusBarItem>
+                    </StatusBar>
 
                 </Grid>
             </TabItem>
             <TabItem Name="_tabAbout" Header="About" Width="60">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="70*"></RowDefinition>
-                        <RowDefinition Height="30*"></RowDefinition>
+                        <RowDefinition Height="80*"></RowDefinition>
+                        <RowDefinition Height="20*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Grid.Column="0">
+                    <Grid Grid.Row="1" Grid.Column="0">
                         
                     </Grid>
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="20">
                         <TextBlock>
-                            Copyright © 2017 Sarang Baheti. <LineBreak />
+                            Copyright © 2017 Sarang Baheti <LineBreak/>
                             License: BSD
                         </TextBlock>
                         <TextBlock>
@@ -113,6 +118,16 @@
                                 http://www.github.com/angeleno/checksum
                             </Hyperlink>
                         </TextBlock>
+                        <TextBlock>
+                            <LineBreak/>
+                            Computes Checksum using various algorithms: <LineBreak/>
+                                - CRC32     <LineBreak/>
+                                - MD5       <LineBreak/>
+                                - SHA1      <LineBreak/>
+                                - SHA256    <LineBreak/>
+                                - SHA384    <LineBreak/>
+                                - SHA512    <LineBreak/>
+                        </TextBlock>                    
                     </StackPanel>
                 </Grid>
             </TabItem>

@@ -24,13 +24,33 @@ namespace checksum
     /// </summary>
     public partial class MainWindow : Window
     {
-        string _fileName = null;
+        #region BUSY_INDICATOR
+
+        void StartBusyOperation()
+        {
+            _sbProgress.IsEnabled = true;
+            _sbProgress.Visibility = Visibility.Visible;
+        }
+
+        void EndBusyOperation()
+        {
+            _sbProgress.Visibility = Visibility.Collapsed;
+            _sbProgress.IsEnabled = false;
+        }
+
+        void UpdateProgress(string message)
+        {
+            _lblStatusText.Text = message;
+        }
+
+        #endregion BUSY_INDICATOR
 
         public MainWindow()
         {
             InitializeComponent();
             Clear();
 
+            _sbProgress.IsEnabled = false;
             _chkCRC32.IsChecked = true;
             _chkMD5.IsChecked = true;
             _chkSHA1.IsChecked = true;
@@ -48,6 +68,7 @@ namespace checksum
         
         private void Clear()
         {
+            _txtFile.Text = string.Empty;
             _txtCRC32.Text = string.Empty;
             _txtMD5.Text = string.Empty;
             _txtSHA1.Text = string.Empty;
@@ -96,32 +117,69 @@ namespace checksum
             {
                 Clear();
 
-                _fileName = openFileDialog.FileName;
-                _txtFile.Text = _fileName;
+                _txtFile.Text = openFileDialog.FileName;
 
-                //  note: you cannot reopen the stream once and be done
-                //  CRC32 will go to the end of the stream and further checksum
-                //  will just return same value for any file- cause we don't have
-                //  anything to compute checksum from
-                //  
-                using (FileStream fs = File.Open(_fileName, FileMode.Open))
+                try
                 {
-                    UpdateCRC32(fs);
+                    StartBusyOperation();
 
-                    fs.Seek(0, SeekOrigin.Begin);
-                    UpdateMD5(fs);
+                    //  note: you cannot reopen the stream once and be done
+                    //  CRC32 will go to the end of the stream and further checksum
+                    //  will just return same value for any file- cause we don't have
+                    //  anything to compute checksum from
+                    //  
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                    {
+                        if(ShouldCalculateCRC32())
+                        {
+                            UpdateProgress("Calculating CRC32");
+                            UpdateCRC32(fs);
+                        }
 
-                    fs.Seek(0, SeekOrigin.Begin);
-                    UpdateSHA1(fs);
+                        if (ShouldCalculateMD5())
+                        {
+                            UpdateProgress("Calculating MD5");
+                            fs.Seek(0, SeekOrigin.Begin);
+                            UpdateMD5(fs);
+                        }
 
-                    fs.Seek(0, SeekOrigin.Begin);
-                    UpdateSHA256(fs);
+                        if (ShouldCalculateSHA1())
+                        {
+                            UpdateProgress("Calculating SHA1");
+                            fs.Seek(0, SeekOrigin.Begin);
+                            UpdateSHA1(fs);
+                        }
 
-                    fs.Seek(0, SeekOrigin.Begin);
-                    UpdateSHA384(fs);
+                        if (ShouldCalculateSHA256())
+                        {
+                            fs.Seek(0, SeekOrigin.Begin);
+                            UpdateProgress("Calculating SHA256");
+                            UpdateSHA256(fs);
+                        }
 
-                    fs.Seek(0, SeekOrigin.Begin);
-                    UpdateSHA512(fs);        
+                        if (ShouldCalculateSHA384())
+                        {
+                            fs.Seek(0, SeekOrigin.Begin);
+                            UpdateProgress("Calculating SHA384");
+                            UpdateSHA384(fs);
+                        }
+
+                        if (ShouldCalculateSHA512())
+                        {
+                            fs.Seek(0, SeekOrigin.Begin);
+                            UpdateProgress("Calculating SHA512");
+                            UpdateSHA512(fs);
+                        }
+                    }
+                }
+                catch(System.Exception ex)
+                {
+                    MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Clear();
+                }
+                finally
+                {
+                    EndBusyOperation();
                 }
             }
         }
@@ -147,9 +205,7 @@ namespace checksum
 
         private void UpdateCRC32(FileStream fs)
         {
-            if (ShouldCalculateCRC32())
-                _txtCRC32.Text = CalculateCRC32CheckSum(fs);
-            
+            _txtCRC32.Text = CalculateCRC32CheckSum(fs);
         }
 
         private string CalculateMD5CheckSum(FileStream fs)
@@ -163,8 +219,7 @@ namespace checksum
 
         private void UpdateMD5(FileStream fs)
         {
-            if(ShouldCalculateMD5())
-                _txtMD5.Text = CalculateMD5CheckSum(fs);
+            _txtMD5.Text = CalculateMD5CheckSum(fs);
         }
 
         private string CalculateSHA1CheckSum(FileStream fs)
@@ -177,8 +232,7 @@ namespace checksum
 
         private void UpdateSHA1(FileStream fs)
         {
-            if (ShouldCalculateSHA1())
-                _txtSHA1.Text = CalculateSHA1CheckSum(fs);
+            _txtSHA1.Text = CalculateSHA1CheckSum(fs);
         }
 
         private string CalculateSHA256CheckSum(FileStream fs)
@@ -191,8 +245,7 @@ namespace checksum
 
         private void UpdateSHA256(FileStream fs)
         {
-            if (ShouldCalculateSHA256())
-                _txtSHA256.Text = CalculateSHA256CheckSum(fs);
+            _txtSHA256.Text = CalculateSHA256CheckSum(fs);
         }
 
         private string CalculateSHA384CheckSum(FileStream fs)
@@ -205,8 +258,7 @@ namespace checksum
 
         private void UpdateSHA384(FileStream fs)
         {
-            if (ShouldCalculateSHA384())
-                _txtSHA384.Text = CalculateSHA384CheckSum(fs);
+            _txtSHA384.Text = CalculateSHA384CheckSum(fs);
         }
 
         private string CalculateSHA512CheckSum(FileStream fs)
@@ -219,8 +271,7 @@ namespace checksum
 
         private void UpdateSHA512(FileStream fs)
         {
-            if (ShouldCalculateSHA512())
-                _txtSHA512.Text = CalculateSHA512CheckSum(fs);
+            _txtSHA512.Text = CalculateSHA512CheckSum(fs);
         }
 
         #endregion CHECKSUM_CALCULATION
@@ -229,32 +280,38 @@ namespace checksum
 
         private void _btnCRC32_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtCRC32.Text))
+                Clipboard.SetText(_txtCRC32.Text);
         }
 
         private void _btnMD5_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtMD5.Text))
+                Clipboard.SetText(_txtMD5.Text);
         }
 
         private void _btnSHA1_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtSHA1.Text))
+                Clipboard.SetText(_txtSHA1.Text);
         }
 
         private void _btnSHA256_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtSHA256.Text))
+                Clipboard.SetText(_txtSHA256.Text);
         }
 
         private void _btnSHA384_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtSHA384.Text))
+                Clipboard.SetText(_txtSHA384.Text);
         }
 
         private void _btnSHA512_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(_txtSHA512.Text))
+                Clipboard.SetText(_txtSHA512.Text);
         }
 
         private void _btnCopyAll_Click(object sender, RoutedEventArgs e)
@@ -269,7 +326,24 @@ namespace checksum
 
         private void _btnVerfiy_Click(object sender, RoutedEventArgs e)
         {
+            var pastedHash = _txtHASH.Text.Trim();
+            if (string.IsNullOrEmpty(pastedHash) || string.IsNullOrEmpty(_txtFile.Text))
+                return;
 
+            if (pastedHash == _txtCRC32.Text)
+                MessageBox.Show("Matches CRC32", "CheckSum", MessageBoxButton.OK);
+            else if (pastedHash == _txtMD5.Text)
+                MessageBox.Show("Matches MD5", "CheckSum", MessageBoxButton.OK);
+            else if (pastedHash == _txtSHA1.Text)
+                MessageBox.Show("Matches SHA1", "CheckSum", MessageBoxButton.OK);
+            else if (pastedHash == _txtSHA256.Text)
+                MessageBox.Show("Matches SHA256", "CheckSum", MessageBoxButton.OK);
+            else if (pastedHash == _txtSHA384.Text)
+                MessageBox.Show("Matches SHA384", "CheckSum", MessageBoxButton.OK);
+            else if (pastedHash == _txtSHA512.Text)
+                MessageBox.Show("Matches SHA512", "CheckSum", MessageBoxButton.OK);
+            else
+                MessageBox.Show("Failed to match", "CheckSum", MessageBoxButton.OK);
         }
 
         
@@ -280,11 +354,18 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if(!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateCRC32() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateCRC32(fs);
-            }            
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateCRC32() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateCRC32(fs);
+                }
+            }
+            catch(System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             e.Handled = true;
         }
@@ -295,10 +376,17 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateMD5() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateMD5(fs);
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateMD5() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateMD5(fs);
+                }
+            }
+            catch(System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             e.Handled = true;
@@ -310,10 +398,17 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA1() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateSHA1(fs);
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA1() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateSHA1(fs);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             e.Handled = true;
@@ -325,10 +420,17 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA256() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateSHA256(fs);
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA256() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateSHA256(fs);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             e.Handled = true;
@@ -341,10 +443,17 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA384() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateSHA384(fs);
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA384() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateSHA384(fs);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             e.Handled = true;
@@ -356,10 +465,17 @@ namespace checksum
             if (chkBox == null)
                 return;
 
-            if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA512() && System.IO.File.Exists(_txtFile.Text))
+            try
             {
-                using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
-                    UpdateSHA512(fs);
+                if (!string.IsNullOrEmpty(_txtFile.Text) && ShouldCalculateSHA512() && System.IO.File.Exists(_txtFile.Text))
+                {
+                    using (FileStream fs = File.Open(_txtFile.Text, FileMode.Open))
+                        UpdateSHA512(fs);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(string.Format("Error: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             e.Handled = true;

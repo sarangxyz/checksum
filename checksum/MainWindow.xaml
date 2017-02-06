@@ -5,8 +5,117 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:checksum"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="CheckSum" Height="480" Width="720" ResizeMode="NoResize">
+    <Grid Margin="0,4,0,0">
+        <TabControl>
+            <TabItem Name="_tabFile" Header="File" Width="60">
+                <Grid Margin="20">
+
+                    <Grid.Resources>
+                        <Style TargetType="Label">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                        </Style>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                            <Setter Property="Width" Value="460"></Setter>
+                        </Style>
+                        <Style TargetType="Button">
+                            <Setter Property="FontSize" Value="12" />
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                            <Setter Property="Width" Value="90"></Setter>
+                        </Style>
+                    </Grid.Resources>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                        <ColumnDefinition Width="25"></ColumnDefinition>
+                        <ColumnDefinition Width="465"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0"  Grid.Column="0" >File</Label>
+                    <Label Grid.Row="1"  Grid.Column="0" >CRC32</Label>
+                    <Label Grid.Row="2"  Grid.Column="0" >MD5</Label>
+                    <Label Grid.Row="3"  Grid.Column="0" >SHA-1</Label>
+                    <Label Grid.Row="4"  Grid.Column="0" >SHA-256</Label>
+                    <Label Grid.Row="5"  Grid.Column="0" >SHA-384</Label>
+                    <Label Grid.Row="6"  Grid.Column="0" >SHA-512</Label>
+                    <Label Grid.Row="9"  Grid.Column="0" >HASH</Label>
+                    
+                    <CheckBox Name="_chkCRC32"  Grid.Row="1"  Grid.Column="1" Checked="_chkCRC32_Checked" ></CheckBox>
+                    <CheckBox Name="_chkMD5"    Grid.Row="2"  Grid.Column="1" Checked="_chkMD5_Checked"></CheckBox>
+                    <CheckBox Name="_chkSHA1"   Grid.Row="3"  Grid.Column="1" Checked="_chkSHA1_Checked"></CheckBox>
+                    <CheckBox Name="_chkSHA256" Grid.Row="4"  Grid.Column="1" Checked="_chkSHA256_Checked"></CheckBox>
+                    <CheckBox Name="_chkSHA384" Grid.Row="5"  Grid.Column="1" Checked="_chkSHA384_Checked"></CheckBox>
+                    <CheckBox Name="_chkSHA512" Grid.Row="6"  Grid.Column="1" Checked="_chkSHA512_Checked"></CheckBox>
+                    
+                    <TextBox Name="_txtFile"    Grid.Row="0"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtCRC32"   Grid.Row="1"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtMD5"     Grid.Row="2"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtSHA1"    Grid.Row="3"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtSHA256"  Grid.Row="4"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtSHA384"  Grid.Row="5"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtSHA512"  Grid.Row="6"  Grid.Column="2" ></TextBox>
+                    <TextBox Name="_txtHASH"    Grid.Row="9"  Grid.Column="2" ></TextBox>
+
+                    <Button Name="_btnFile"     Grid.Row="0"  Grid.Column="3" Click="_btnFile_Click">Browse</Button>
+                    <Button Name="_btnCRC32"    Grid.Row="1"  Grid.Column="3" Click="_btnCRC32_Click">Copy CRC32</Button>
+                    <Button Name="_btnMD5"      Grid.Row="2"  Grid.Column="3" Click="_btnMD5_Click">Copy MD5</Button>
+                    <Button Name="_btnSHA1"     Grid.Row="3"  Grid.Column="3" Click="_btnSHA1_Click">Copy SHA-1</Button>
+                    <Button Name="_btnSHA256"   Grid.Row="4"  Grid.Column="3" Click="_btnSHA256_Click">Copy SHA-256</Button>
+                    <Button Name="_btnSHA384"   Grid.Row="5"  Grid.Column="3" Click="_btnSHA384_Click">Copy SHA-384</Button>
+                    <Button Name="_btnSHA512"   Grid.Row="6"  Grid.Column="3" Click="_btnSHA512_Click">Copy SHA-512</Button>
+                    <Button Name="_btnCopyAll"  Grid.Row="7"  Grid.Column="3" Click="_btnCopyAll_Click">Copy All</Button>
+                    <!--<Button Name="_btnPaste"    Grid.Row="9"  Grid.Column="3" Click="_btnPaste_Click">Paste</Button>-->
+                    <Button Name="_btnVerfiy"   Grid.Row="10" Grid.Column="2" Click="_btnVerfiy_Click"  HorizontalAlignment="Right" >Verify</Button>
+
+
+                </Grid>
+            </TabItem>
+            <TabItem Name="_tabAbout" Header="About" Width="60">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70*"></RowDefinition>
+                        <RowDefinition Height="30*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        
+                    </Grid>
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
+                        <TextBlock>
+                            Copyright © 2017 Sarang Baheti. <LineBreak />
+                            License: BSD
+                        </TextBlock>
+                        <TextBlock>
+                            Repository: 
+                            <Hyperlink NavigateUri="http://www.github.com/angeleno/checksum"
+                                      RequestNavigate="Hyperlink_RequestNavigate">
+                                http://www.github.com/angeleno/checksum
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

@@ -16,9 +16,43 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.Security.Cryptography;
 using System.IO;
+using System.ComponentModel;
 
 namespace checksum
 {
+
+    public class BusyStatusTracker : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get
+            {
+                return _isBusy;
+            }
+            set
+            {
+                _isBusy = true;
+                OnPropertyChanged("IsBusy");
+            }
+        }
+
+        public BusyStatusTracker()
+        {
+            _isBusy = false;
+        }
+
+        protected void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -26,21 +60,20 @@ namespace checksum
     {
         #region BUSY_INDICATOR
 
+        public BusyStatusTracker BusyStatusTracker = new BusyStatusTracker();
         void StartBusyOperation()
         {
-            _sbProgress.IsEnabled = true;
-            _sbProgress.Visibility = Visibility.Visible;
+            BusyStatusTracker.IsBusy = true;
         }
 
         void EndBusyOperation()
         {
-            _sbProgress.Visibility = Visibility.Collapsed;
-            _sbProgress.IsEnabled = false;
+            BusyStatusTracker.IsBusy = false;
         }
 
         void UpdateProgress(string message)
         {
-            _lblStatusText.Text = message;
+            
         }
 
         #endregion BUSY_INDICATOR
@@ -50,10 +83,11 @@ namespace checksum
             InitializeComponent();
             Clear();
 
-            _sbProgress.IsEnabled = false;
             _chkCRC32.IsChecked = true;
             _chkMD5.IsChecked = true;
             _chkSHA1.IsChecked = true;
+
+            this.DataContext = BusyStatusTracker;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

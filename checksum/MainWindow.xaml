@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:checksum"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="CheckSum" Height="480" Width="720" ResizeMode="NoResize">
     <Grid Margin="0,4,0,0">
         <TabControl>
             <TabItem Name="_tabFile" Header="File" Width="60">
                 <Grid Margin="20">
-
                     <Grid.Resources>
                         <Style TargetType="Label">
                             <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -53,6 +53,7 @@
                         <RowDefinition></RowDefinition>-->
                     </Grid.RowDefinitions>
 
+                    
                     <Label Grid.Row="0"  Grid.Column="0" >File</Label>
                     <Label Grid.Row="1"  Grid.Column="0" >CRC32</Label>
                     <Label Grid.Row="2"  Grid.Column="0" >MD5</Label>
@@ -89,12 +90,10 @@
                     <!--<Button Name="_btnPaste"    Grid.Row="9"  Grid.Column="3" Click="_btnPaste_Click">Paste</Button>-->
                     <Button Name="_btnVerfiy"   Grid.Row="8" Grid.Column="3" Click="_btnVerfiy_Click"  HorizontalAlignment="Right" >Verify</Button>
 
-                    <StatusBar Name="_sbProgress" Grid.Row="10" Grid.ColumnSpan="4" Visibility="Collapsed">
-                        <StatusBarItem>
-                            <TextBlock Name="_lblStatusText" />
-                        </StatusBarItem>
-                    </StatusBar>
 
+                    <xctk:BusyIndicator DisplayAfter="00:00:01.00" IsBusy="{Binding IsBusy}" Grid.Row="0" Grid.RowSpan="9" Grid.Column="0" Grid.ColumnSpan="4">
+                        <ContentControl/>
+                    </xctk:BusyIndicator>
                 </Grid>
             </TabItem>
             <TabItem Name="_tabAbout" Header="About" Width="60">

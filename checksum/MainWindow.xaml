@@ -112,7 +112,7 @@
                         </TextBlock>
                         <TextBlock>
                             Repository: 
-                            <Hyperlink NavigateUri="http://www.github.com/angeleno/checksum"
+                            <Hyperlink NavigateUri="http://www.github.com/sarangxyz/checksum"
                                       RequestNavigate="Hyperlink_RequestNavigate">
                                 http://www.github.com/angeleno/checksum
                             </Hyperlink>
